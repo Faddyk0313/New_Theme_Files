@@ -702,75 +702,134 @@
   icon_stroke_width: icon_stroke_width
 %}
 
+{% style %}
+  .mega-menu__group,
+  .drawer-menu__group {
+    display: block;
+  }
+
+  .mega-menu__group-head,
+  .drawer-menu__group-head {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-column-gap: 1.6rem;
+       -moz-column-gap: 1.6rem;
+            column-gap: 1.6rem;
+    width: 100%;
+  }
+
+  .mega-menu__group-head > .header__menu-item,
+  .drawer-menu__group-head > .drawer-menu__menu-item {
+    width: auto;
+    -webkit-box-flex: 0;
+        -ms-flex: 0 1 auto;
+            flex: 0 1 auto;
+    padding-bottom: 0.4rem;
+  }
+
+  .mega-menu__group-toggle,
+  .drawer-menu__group-toggle {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-align: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    padding: 0.4rem;
+    margin: 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: inherit;
+  }
+
+  .mega-menu__chevron--down,
+  .drawer-menu__chevron--down {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    -webkit-transition: -webkit-transform 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out;
+  }
+
+  [data-collapsible-group][data-collapsed] .mega-menu__chevron--down,
+  [data-collapsible-group][data-collapsed] .drawer-menu__chevron--down {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+
+  .mega-menu__sublist,
+  .drawer-menu__sublist {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    padding-bottom: 1.2rem;
+    overflow: hidden;
+  }
+
+  [data-collapsible-group][data-collapsed] .mega-menu__sublist,
+  [data-collapsible-group][data-collapsed] .drawer-menu__sublist {
+    display: none;
+  }
+
+  .mega-menu__sublist-item,
+  .drawer-menu__sublist-item {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    font-weight: 400;
+    color: var(--gsc-text-color-60, rgba(var(--gsc-text-color-rgb, 255, 255, 255), 0.6));
+    opacity: 0.6;
+  }
+
+  .mega-menu__sublist-item:hover,
+  .mega-menu__sublist-item.active,
+  .drawer-menu__sublist-item:hover,
+  .drawer-menu__sublist-item.active {
+    opacity: 1;
+  }
+
+  .drawer-menu .mega-menu__block .card-carousel__slide {
+    --gsc-slide-width: 50%;
+  }
+
+{% endstyle %}
+
+<script>
+  (() => {
+    const onClick = (event) => {
+      const toggle = event.target.closest('[data-collapsible-toggle]');
+      if (!toggle) return;
+
+      const group = toggle.closest('[data-collapsible-group]');
+      if (!group) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+
+      const collapsed = group.hasAttribute('data-collapsed');
+      if (collapsed) {
+        group.removeAttribute('data-collapsed');
+      } else {
+        group.setAttribute('data-collapsed', '');
+      }
+      toggle.setAttribute('aria-expanded', collapsed ? 'true' : 'false');
+    };
+
+    document.addEventListener('click', onClick);
+  })();
+</script>
+
 {% if request.design_mode %}
-  {% style %}
-    .mega-menu__group {
-      display: block;
-    }
-
-    .mega-menu__group > .header__menu-item {
-      padding-bottom: 0.6rem;
-    }
-
-    .mega-menu__chevron--down {
-      -webkit-transform: rotate(90deg);
-      transform: rotate(90deg);
-    }
-
-    .mega-menu__sublist {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -webkit-box-orient: vertical;
-      -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-      flex-direction: column;
-      padding-bottom: 1.2rem;
-    }
-
-    .mega-menu__sublist-item {
-      padding: 0.4rem 0;
-      font-weight: 400;
-      opacity: 0.55;
-    }
-
-    .mega-menu__sublist-item:hover,
-    .mega-menu__sublist-item.active {
-      opacity: 1;
-    }
-
-    .drawer-menu__group {
-      display: block;
-    }
-
-    .drawer-menu__chevron--down {
-      -webkit-transform: rotate(90deg);
-      transform: rotate(90deg);
-    }
-
-    .drawer-menu__sublist {
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      -webkit-box-orient: vertical;
-      -webkit-box-direction: normal;
-      -ms-flex-direction: column;
-      flex-direction: column;
-      padding-bottom: 0.8rem;
-    }
-
-    .drawer-menu__sublist-item {
-      font-weight: 400;
-      opacity: 0.55;
-    }
-
-    .drawer-menu__sublist-item:hover,
-    .drawer-menu__sublist-item.active {
-      opacity: 1;
-    }
-
-  {% endstyle %}
-
   {% style %}
     .mock-drawer-block {
       position: fixed;
@@ -1330,25 +1389,35 @@
                             <div class='mega-menu__list'>
                               {%- for childlink in link.links -%}
                                 {%- if childlink.links.size > 0 -%}
-                                  <div class='mega-menu__group'>
-                                    <a
-                                      href='{{ childlink.url }}'
-                                      class='header__menu-item header__menu-item--medium {% if childlink.current %} active{% endif %}'
-                                      data-focus-trap-target
-                                      aria-label='{{ childlink.title | strip_html | escape }}'
-                                    >
-                                      <span>
-                                        <span class='header__menu-item-label'>
-                                          {{ childlink.title }}
+                                  <div class='mega-menu__group' data-collapsible-group>
+                                    <div class='mega-menu__group-head'>
+                                      <a
+                                        href='{{ childlink.url }}'
+                                        class='header__menu-item header__menu-item--medium {% if childlink.current %} active{% endif %}'
+                                        data-focus-trap-target
+                                        aria-label='{{ childlink.title | strip_html | escape }}'
+                                      >
+                                        <span>
+                                          <span class='header__menu-item-label'>
+                                            {{ childlink.title }}
+                                          </span>
                                         </span>
-                                      </span>
-                                      {%- render 'icon',
-                                        icon_name: 'chevron',
-                                        class: 'mega-menu__chevron mega-menu__chevron--down',
-                                        stroke_width: 1.5
-                                      -%}
-                                    </a>
-                                    <div class='mega-menu__sublist'>
+                                      </a>
+                                      <button
+                                        type='button'
+                                        class='unstyled-button mega-menu__group-toggle'
+                                        data-collapsible-toggle
+                                        aria-expanded='true'
+                                        aria-label='{{ childlink.title | strip_html | escape }}'
+                                      >
+                                        {%- render 'icon',
+                                          icon_name: 'chevron',
+                                          class: 'mega-menu__chevron mega-menu__chevron--down',
+                                          stroke_width: 1.5
+                                        -%}
+                                      </button>
+                                    </div>
+                                    <div class='mega-menu__sublist' data-collapsible-content>
                                       {%- for grandchildlink in childlink.links -%}
                                         <a
                                           href='{{ grandchildlink.url }}'
