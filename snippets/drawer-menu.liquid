@@ -403,16 +403,31 @@
                     <div class='drawer-menu__list-body'>
                       {%- for childlink in link.links -%}
                         {%- if childlink.links.size > 0 -%}
-                          <drawer-menu-page-link
-                            class='drawer-menu__menu-item drawer-menu__menu-item--medium'
-                            data-page-id='DrawerMenuPage-{{ link.handle }}-{{ childlink.handle }}'
-                            tabindex='0'
-                          >
-                            <span>
-                              <span class='drawer-menu__menu-item-label'>{{ childlink.title }}</span>
-                            </span>
-                            {% render 'icon', icon_name: 'chevron', class: 'drawer-menu__chevron', stroke_width: 1.5 %}
-                          </drawer-menu-page-link>
+                          <div class='drawer-menu__group'>
+                            <a
+                              class='drawer-menu__menu-item drawer-menu__menu-item--medium {% if childlink.current %} active{% endif %}'
+                              href='{{ childlink.url }}'
+                              aria-label='{{ childlink.title | strip_html | escape }}'
+                            >
+                              <span>
+                                <span class='drawer-menu__menu-item-label'>{{ childlink.title }}</span>
+                              </span>
+                              {% render 'icon', icon_name: 'chevron', class: 'drawer-menu__chevron drawer-menu__chevron--down', stroke_width: 1.5 %}
+                            </a>
+                            <div class='drawer-menu__sublist'>
+                              {%- for grandchildlink in childlink.links -%}
+                                <a
+                                  class='drawer-menu__menu-item drawer-menu__menu-item--medium drawer-menu__sublist-item {% if grandchildlink.current %} active{% endif %}'
+                                  href='{{ grandchildlink.url }}'
+                                  aria-label='{{ grandchildlink.title | strip_html | escape }}'
+                                >
+                                  <span>
+                                    <span class='drawer-menu__menu-item-label'>{{ grandchildlink.title }}</span>
+                                  </span>
+                                </a>
+                              {%- endfor -%}
+                            </div>
+                          </div>
                         {%- else -%}
                           <a
                             class='drawer-menu__menu-item drawer-menu__menu-item--medium {% if childlink.current %} active{% endif %}'
@@ -451,83 +466,6 @@
               {% endif %}
             </div>
           </drawer-menu-page>
-          {%- for childlink in link.links -%}
-            {%- if childlink.links.size > 0 -%}
-              <drawer-menu-page
-                class='drawer-menu__page {% if has_mega_menu %} drawer-menu__page--with-mega-menu {% endif %}'
-                data-prev-page-id='DrawerMenuPage-{{ link.handle }}'
-                data-mega-menu-id='{{ link_title_downcase }}'
-                aria-hidden='true'
-                data-page-id='DrawerMenuPage-{{ link.handle }}-{{ childlink.handle }}'
-              >
-                <div class='drawer-menu__list-title drawer-menu__list-title--mobile'>
-                  <div class='drawer-menu__list-title-body drawer-menu__list-title-body--with-link'>
-                    <drawer-menu-page-link
-                      class='drawer-menu__list-title-chevron-wrapper'
-                      data-page-id='DrawerMenuPage-{{ link.handle }}'
-                      tabindex='-1'
-                    >
-                      {% render 'icon', icon_name: 'chevron', class: 'drawer-menu__title-chevron x-flip' %}
-                    </drawer-menu-page-link>
-                    <a
-                      class='drawer-menu__list-title-label unstyled-link link-parent-for-hover'
-                      href='{{ childlink.url }}'
-                      aria-label='{{ childlink.title | strip_html | escape }}'
-                      tabindex='-1'
-                      menu-title='{{ childlink.title | strip_html | escape }}'
-                    >
-                      <span>
-                        <span class='underline-animation'>{{ childlink.title }}</span>
-                      </span>
-                    </a>
-                  </div>
-                </div>
-
-                <div class='drawer-menu__content' data-drawer-menu-content>
-                  <div class='drawer-menu__list {% if has_mega_menu == false %} drawer-menu__list--without-mega-menu {% endif %}'>
-                    <div class='drawer-menu__list-inner'>
-                      <div class='drawer-menu__list-title drawer-menu__list-title--desktop'>
-                        <div class='drawer-menu__list-title-body drawer-menu__list-title-body--with-link'>
-                          <drawer-menu-page-link
-                            class='drawer-menu__list-title-chevron-wrapper'
-                            data-page-id='DrawerMenuPage-{{ link.handle }}'
-                            tabindex='0'
-                          >
-                            {% render 'icon', icon_name: 'chevron', class: 'drawer-menu__title-chevron x-flip' %}
-                          </drawer-menu-page-link>
-                          <a
-                            class='drawer-menu__list-title-label unstyled-link link-parent-for-hover'
-                            href='{{ childlink.url }}'
-                            aria-label='{{ childlink.title | strip_html | escape }}'
-                            menu-title='{{ childlink.title | strip_html | escape }}'
-                          >
-                            <span>
-                              <span class='underline-animation'>{{ childlink.title }}</span>
-                            </span>
-                          </a>
-                        </div>
-                      </div>
-                      {%- if childlink.links.size > 0 -%}
-                        <div class='drawer-menu__list-body'>
-                          {%- for grandchildlink in childlink.links -%}
-                            <a
-                              class='drawer-menu__menu-item drawer-menu__menu-item--small {% if grandchildlink.current %} active{% endif %}'
-                              href='{{ grandchildlink.url }}'
-                              aria-label='{{ grandchildlink.title | strip_html | escape }}'
-                            >
-                              <span>
-                                <span class='drawer-menu__menu-item-label'>{{ grandchildlink.title }}</span>
-                              </span>
-                            </a>
-                          {%- endfor -%}
-                        </div>
-                      {%- endif -%}
-                    </div>
-                  </div>
-                </div>
-              </drawer-menu-page>
-            {%- endif -%}
-          {%- endfor -%}
         {%- endif -%}
       {%- endfor -%}
     </div>
