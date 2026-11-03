@@ -19,12 +19,26 @@
 
   assign size_filter_label_downcase = size_filter_label | downcase | strip
   assign checkbox_labels = checkbox_filter_labels | downcase | split: ','
+  assign hidden_labels = hidden_filter_labels | downcase | split: ','
 -%}
 
 <form class='bg-filters__form' data-filters-form>
   {%- for filter in results.filters -%}
     {%- liquid
       assign filter_label_downcase = filter.label | downcase | strip
+
+      comment
+        Hidden groups are rendered elsewhere (the Youth/Senior toggle), so the
+        sidebar skips them.
+      endcomment
+      assign is_hidden_group = false
+      for label in hidden_labels
+        assign label_striped = label | strip
+        if label_striped != blank and label_striped == filter_label_downcase
+          assign is_hidden_group = true
+          break
+        endif
+      endfor
 
       assign is_checkbox_group = false
       for label in checkbox_labels
@@ -41,6 +55,7 @@
       endif
     -%}
 
+    {%- unless is_hidden_group -%}
     <div class='bg-filters__item{% if show_divider %} bg-filters__item--bordered{% endif %}'>
       <accordeon-component class='accordeon bg-filters__accordeon' data-aria-expanded='true'>
         <accordeon-button
@@ -293,5 +308,6 @@
         </div>
       </accordeon-component>
     </div>
+    {%- endunless -%}
   {%- endfor -%}
 </form>
